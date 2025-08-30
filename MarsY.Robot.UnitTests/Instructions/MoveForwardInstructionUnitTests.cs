@@ -1,0 +1,103 @@
+using AutoFixture.Xunit2;
+using MarsY.Robot.Instructions;
+using MarsY.Robot.ResearchSpace;
+using NSubstitute;
+using Shouldly;
+
+namespace MarsY.Robot.UnitTests.Instructions;
+
+public class MoveForwardInstructionUnitTests
+{
+    public static IEnumerable<object[]> WithinBoundary =>
+        new List<object[]>
+        {
+            new object[]
+            {
+                new RobotPosition { X = 0, Y = 0, Orientation = Orientation.North },
+                new RobotPosition { X = 0, Y = 1, Orientation = Orientation.North }
+            },
+            new object[]
+            {
+                new RobotPosition { X = 0, Y = 0, Orientation = Orientation.East },
+                new RobotPosition { X = 1, Y = 0, Orientation = Orientation.East }
+            },
+            new object[]
+            {
+                new RobotPosition { X = 23, Y = 1, Orientation = Orientation.South },
+                new RobotPosition { X = 23, Y = 0, Orientation = Orientation.South }
+            },
+            new object[]
+            {
+                new RobotPosition { X = 1, Y = 12, Orientation = Orientation.West },
+                new RobotPosition { X = 0, Y = 12, Orientation = Orientation.West }
+            }
+        };
+
+    [Theory]
+    [MemberData(nameof(WithinBoundary))]
+    public void Execute_WithinBoundary_Executed(RobotPosition initialPosition, RobotPosition expectedPosition)
+    {
+        // Arrange
+        var boundary = Substitute.For<IBoundary>();
+        boundary.Contains(default, default).ReturnsForAnyArgs(true);
+
+        var graveyard = Substitute.For<IRobotsGraveyard>();
+        graveyard.Contains(default).ReturnsForAnyArgs(false);
+
+        var instruction = new MoveForwardInstruction(boundary, graveyard);
+
+        // Act
+        var actualResult = instruction.Execute(initialPosition);
+
+        // Assert
+        actualResult.Type.ShouldBe(ExecutionResultType.Executed);
+        actualResult.Position.ShouldNotBeNull();
+        actualResult.Position.ShouldBe(expectedPosition);
+        boundary.Received(1).Contains(initialPosition.X, initialPosition.Y);
+        graveyard.Received(1).Contains(initialPosition);
+    }
+
+    [Theory]
+    [AutoData]
+    public void Execute_OnTheBoundaryEdge_RobotIsBusted(RobotPosition position)
+    {
+        // Arrange
+        var graveyard = Substitute.For<IRobotsGraveyard>();
+        graveyard.Contains(default).ReturnsForAnyArgs(false);
+
+        var boundary = Substitute.For<IBoundary>();
+        boundary.Contains(default, default).ReturnsForAnyArgs(false);
+
+        var instruction = new MoveForwardInstruction(boundary, graveyard);
+
+        // Act
+        var actualResult = instruction.Execute(position);
+
+        // Assert
+        actualResult.Type.ShouldBe(ExecutionResultType.RobotIsBusted);
+        actualResult.Position.ShouldBeNull();
+        boundary.ReceivedWithAnyArgs(1).Contains(position.X, position.Y);
+        graveyard.Received(1).Contains(position);
+    }
+
+    [Theory]
+    [AutoData]
+    public void Execute_OnTheBoundaryEdgeWhereOtherRobotGotBusted_Skipped(RobotPosition position)
+    {
+        // Arrange
+        var graveyard = Substitute.For<IRobotsGraveyard>();
+        graveyard.Contains(default).ReturnsForAnyArgs(true);
+
+        var boundary = Substitute.For<IBoundary>();
+        var instruction = new MoveForwardInstruction(boundary, graveyard);
+
+        // Act
+        var actualResult = instruction.Execute(position);
+
+        // Assert
+        actualResult.Type.ShouldBe(ExecutionResultType.Skipped);
+        actualResult.Position.ShouldBeNull();
+        boundary.ReceivedCalls().ShouldBeEmpty();
+        graveyard.Received(1).Contains(position);
+    }
+}
