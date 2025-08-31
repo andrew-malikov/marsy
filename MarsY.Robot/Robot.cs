@@ -18,7 +18,11 @@ public enum RobotState
     Busted = 1
 }
 
-public sealed class Robot(RobotPosition position, RobotState state = RobotState.Online)
+public sealed class Robot(
+    RobotPosition position,
+    IBoundary boundary,
+    ISet<RobotPosition> robotScents,
+    RobotState state = RobotState.Online)
 {
     /// <summary>
     ///     Last trackable position.
@@ -47,22 +51,13 @@ public sealed class Robot(RobotPosition position, RobotState state = RobotState.
             return;
         }
 
-        var result = instruction.Execute(Position);
-        switch (result.Type)
+        var newPosition = instruction.Execute(Position);
+        if (boundary.Contains(newPosition.X, newPosition.Y))
         {
-            case ExecutionResultType.Executed:
-                Position = result.Position!.Value;
-                break;
-
-            case ExecutionResultType.Skipped:
-                break;
-
-            case ExecutionResultType.RobotIsBusted:
-                State = RobotState.Busted;
-                return;
-
-            default:
-                throw new NotImplementedException();
+            return;
         }
+
+        State = RobotState.Busted;
+        robotScents.Add(Position);
     }
 }

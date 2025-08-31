@@ -1,17 +1,15 @@
-using MarsY.Robot.ResearchSpace;
-
 namespace MarsY.Robot.Instructions;
 
-public sealed class MoveForwardInstruction(IBoundary researchSpace, IRobotsGraveyard graveyard) : IInstruction
+public sealed class MoveForwardInstruction(ISet<RobotPosition> robotScents) : IInstruction
 {
-    public ExecutionResult Execute(RobotPosition position)
+    public RobotPosition Execute(RobotPosition position)
     {
-        if (graveyard.Contains(position))
+        if (robotScents.Contains(position))
         {
-            return new ExecutionResult(ExecutionResultType.Skipped);
+            return position;
         }
 
-        var repositioned = position.Orientation switch
+        return position.Orientation switch
         {
             Orientation.North => position with { Y = position.Y + 1 },
             Orientation.East => position with { X = position.X + 1 },
@@ -19,9 +17,5 @@ public sealed class MoveForwardInstruction(IBoundary researchSpace, IRobotsGrave
             Orientation.West => position with { X = position.X - 1 },
             _ => throw new NotImplementedException("Houston! Are we in a black hole again?")
         };
-
-        return !researchSpace.Contains(repositioned.X, repositioned.Y)
-            ? new ExecutionResult(ExecutionResultType.RobotIsBusted)
-            : new ExecutionResult(ExecutionResultType.Executed, repositioned);
     }
 }

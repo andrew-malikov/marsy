@@ -1,6 +1,11 @@
-namespace MarsY.Robot.ResearchSpace;
+namespace MarsY.Robot;
 
-/// <param name="x"> Right grid boundary. </param>
+public interface IBoundary
+{
+    bool Contains(int x, int y);
+}
+
+/// <param name="x">Right grid boundary. </param>
 /// <param name="y">Upper grid boundary.</param>
 public sealed class Grid(int x, int y) : IBoundary
 {

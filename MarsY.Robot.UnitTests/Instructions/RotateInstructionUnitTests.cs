@@ -24,10 +24,8 @@ public class RotateInstructionUnitTests
         var actualResult = instruction.Execute(position);
 
         // Assert
-        actualResult.Type.ShouldBe(ExecutionResultType.Executed);
-        actualResult.Position.ShouldNotBeNull();
-        actualResult.Position.Value.Orientation.ShouldBe(expected);
-        actualResult.Position.Value.X.ShouldBe(3);
-        actualResult.Position.Value.Y.ShouldBe(3);
+        actualResult.Orientation.ShouldBe(expected);
+        actualResult.X.ShouldBe(3);
+        actualResult.Y.ShouldBe(3);
     }
 }

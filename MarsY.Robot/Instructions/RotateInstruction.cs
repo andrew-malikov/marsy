@@ -8,9 +8,8 @@ public enum RotateDirection
 
 public sealed class RotateInstruction(RotateDirection direction) : IInstruction
 {
-    public ExecutionResult Execute(RobotPosition position)
+    public RobotPosition Execute(RobotPosition position)
     {
-        return new ExecutionResult(ExecutionResultType.Executed,
-            position with { Orientation = (Orientation)((4 + (int)position.Orientation + (int)direction) % 4) });
+        return position with { Orientation = (Orientation)((4 + (int)position.Orientation + (int)direction) % 4) };
     }
 }
