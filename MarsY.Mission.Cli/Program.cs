@@ -13,7 +13,7 @@ if (validationResult is not null)
     return 1;
 }
 
-var mission = new ResearchMission(new RobotStdOutPrinter(), missionPlan!.Value);
+var mission = new ResearchMission(new RobotStdOutPrinter(), missionPlan!);
 var missionValidationResult = mission.Accomplish();
 if (missionValidationResult is not null)
 {
