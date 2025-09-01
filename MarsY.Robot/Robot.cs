@@ -54,6 +54,7 @@ internal sealed class Robot(
         var newPosition = instruction.Execute(Position);
         if (boundary.Contains(newPosition.X, newPosition.Y))
         {
+            Position = newPosition;
             return;
         }
 

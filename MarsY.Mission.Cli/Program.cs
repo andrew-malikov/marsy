@@ -10,7 +10,9 @@ var (missionPlan, validationResult) = MissionPlan.From(plan);
 if (validationResult is not null)
 {
     Console.WriteLine("Something wrong with input data. {0}", validationResult.ErrorMessage);
+    return 1;
 }
 
 var mission = new ResearchMission(new RobotStdOutPrinter(), missionPlan!.Value);
 mission.Accomplish();
+return 0;

@@ -30,7 +30,7 @@ internal readonly record struct RobotDraft(RobotPosition InitialPosition, string
         {
             return (null,
                 new ValidationResult(
-                    $"Robot's initial position '{initialPosition}' is malformed, it must include 3 parts separated by space like X Y Orientation"));
+                    $"Robot's initial position '{initialPosition}' is malformed, it must include 3 parts separated by space like 5 3 E."));
         }
 
         if (!int.TryParse(positionParts[0], out int x))
@@ -99,7 +99,7 @@ public readonly struct MissionPlan
                     $"Research plan '{planCode}' must contain several lines, first is the grid and on robot setups on the rest."));
         }
 
-        var gridParts = parts[0].Split("\n", StringSplitOptions.RemoveEmptyEntries);
+        var gridParts = parts[0].Split(" ", StringSplitOptions.RemoveEmptyEntries);
         if (gridParts.Length != 2)
         {
             return (null,
@@ -128,16 +128,17 @@ public readonly struct MissionPlan
         {
             return (null,
                 new ValidationResult(
-                    $"Robots setup {parts[1]} is malformed, must contain 2 lines per a robot setup, found {robotParts.Length / 2.0} setups."));
+                    $"Robots' setup {parts[1]} is malformed, must contain 2 lines per a robot setup, found {robotParts.Length / 2.0} setups."));
         }
 
         var robots = new List<RobotDraft>(robotParts.Length / 2);
         for (int i = 0; i < robotParts.Length / 2; i++)
         {
-            var (robot, validationResult) = RobotDraft.From(robotParts[i], robotParts[i + 1], grid!);
+            var (robot, validationResult) = RobotDraft.From(robotParts[i * 2], robotParts[i * 2 + 1], grid!);
             if (validationResult is not null)
             {
-                return (null, new ValidationResult($"Robot #{i} setup is malformed. {validationResult.ErrorMessage}"));
+                return (null,
+                    new ValidationResult($"Robot's #{i} setup is malformed. {validationResult.ErrorMessage}"));
             }
 
             robots.Add(robot!.Value);
