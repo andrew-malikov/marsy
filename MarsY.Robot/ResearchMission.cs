@@ -5,7 +5,22 @@ namespace MarsY.Robot;
 
 internal class InstructionParser(ISet<RobotPosition> robotScents)
 {
-    public IEnumerable<IInstruction> Parse(IEnumerable<char> instructionCode)
+    private static readonly HashSet<char> Instructions = ['L', 'R', 'F'];
+
+    public (IEnumerable<IInstruction>?, ValidationResult?) Parse(IEnumerable<char> instructionCode)
+    {
+        foreach (var symbol in instructionCode)
+        {
+            if (!Instructions.Contains(symbol))
+            {
+                return (null, new ValidationResult($"Instruction {symbol} isn't supported yet."));
+            }
+        }
+
+        return (ParseNaked(instructionCode), null);
+    }
+
+    private IEnumerable<IInstruction> ParseNaked(IEnumerable<char> instructionCode)
     {
         foreach (var symbol in instructionCode)
         {
@@ -14,15 +29,15 @@ internal class InstructionParser(ISet<RobotPosition> robotScents)
                 'L' => new RotateInstruction(RotateDirection.Left),
                 'R' => new RotateInstruction(RotateDirection.Right),
                 'F' => new MoveForwardInstruction(robotScents),
-                _ => throw new NotImplementedException()
+                _ => throw new NotImplementedException("Should not happen!")
             };
         }
     }
 }
 
-internal readonly record struct RobotDraft(RobotPosition InitialPosition, string Instructions)
+internal readonly record struct RobotDraft(int Id, RobotPosition InitialPosition, string Instructions)
 {
-    public static (RobotDraft?, ValidationResult?) From(string initialPosition, string instructionSet,
+    public static (RobotDraft?, ValidationResult?) From(int id, string initialPosition, string instructionSet,
         IBoundary boundary)
     {
         var positionParts = initialPosition.Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -74,7 +89,7 @@ internal readonly record struct RobotDraft(RobotPosition InitialPosition, string
         }
 
         var robotPosition = new RobotPosition(x, y, orientation.Value);
-        return (new RobotDraft(robotPosition, instructionSet), null);
+        return (new RobotDraft(id, robotPosition, instructionSet), null);
     }
 }
 
@@ -134,7 +149,7 @@ public readonly struct MissionPlan
         var robots = new List<RobotDraft>(robotParts.Length / 2);
         for (int i = 0; i < robotParts.Length / 2; i++)
         {
-            var (robot, validationResult) = RobotDraft.From(robotParts[i * 2], robotParts[i * 2 + 1], grid!);
+            var (robot, validationResult) = RobotDraft.From(i, robotParts[i * 2], robotParts[i * 2 + 1], grid!);
             if (validationResult is not null)
             {
                 return (null,
@@ -150,15 +165,22 @@ public readonly struct MissionPlan
 
 public sealed class ResearchMission(IRobotPrinter robotPrinter, MissionPlan plan)
 {
-    public void Accomplish()
+    public ValidationResult? Accomplish()
     {
         var scents = new HashSet<RobotPosition>();
         var instructionParser = new InstructionParser(scents);
 
         foreach (var draft in plan.Robots)
         {
-            var robot = new Robot(draft.InitialPosition, plan.Boundary, scents);
-            robot.Execute(instructionParser.Parse(draft.Instructions));
+            var robot = new Robot(draft.Id, draft.InitialPosition, plan.Boundary, scents);
+            var (instructions, validationResult) = instructionParser.Parse(draft.Instructions);
+            if (validationResult is not null)
+            {
+                return new ValidationResult(
+                    $"Robot #{robot.Id} has a malformed instruction. {validationResult.ErrorMessage}");
+            }
+
+            robot.Execute(instructions!);
             if (robot.State is RobotState.Online)
             {
                 robotPrinter.LogOnlineRobot(robot.Position);
@@ -168,5 +190,7 @@ public sealed class ResearchMission(IRobotPrinter robotPrinter, MissionPlan plan
                 robotPrinter.LogBustedRobot(robot.Position);
             }
         }
+
+        return null;
     }
 }

@@ -19,11 +19,14 @@ internal enum RobotState
 }
 
 internal sealed class Robot(
+    int id,
     RobotPosition position,
     IBoundary boundary,
     ISet<RobotPosition> robotScents,
     RobotState state = RobotState.Online)
 {
+    public int Id { get; private set; } = id;
+
     /// <summary>
     ///     Last trackable position.
     /// </summary>
