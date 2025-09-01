@@ -18,7 +18,7 @@ internal sealed class Grid : IBoundary
 
     /// <param name="x">Right grid boundary, a positive integer > 0.</param>
     /// <param name="y">Upper grid boundary, a positive integer > 0.</param>
-    private Grid(int x, int y)
+    internal Grid(int x, int y)
     {
         _x = x;
         _y = y;

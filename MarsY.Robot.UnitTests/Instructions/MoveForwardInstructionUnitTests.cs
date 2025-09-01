@@ -7,9 +7,16 @@ namespace MarsY.Robot.UnitTests.Instructions;
 
 public class MoveForwardInstructionUnitTests
 {
-    private readonly ISet<RobotPosition> _scents = Substitute.For<ISet<RobotPosition>>();
+    private readonly ISet<RobotPosition> _scents;
+    private readonly IInstruction _instruction;
 
-    public static IEnumerable<object[]> WithinBoundary =>
+    public MoveForwardInstructionUnitTests()
+    {
+        _scents = Substitute.For<ISet<RobotPosition>>();
+        _instruction = new MoveForwardInstruction(_scents);
+    }
+
+    public static IEnumerable<object[]> NewPosition =>
         new List<object[]>
         {
             new object[]
@@ -35,15 +42,14 @@ public class MoveForwardInstructionUnitTests
         };
 
     [Theory]
-    [MemberData(nameof(WithinBoundary))]
-    public void Execute_WithinBoundary_Executed(RobotPosition initialPosition, RobotPosition expectedPosition)
+    [MemberData(nameof(NewPosition))]
+    public void Execute_NoScent_NewPosition(RobotPosition initialPosition, RobotPosition expectedPosition)
     {
         // Arrange
         _scents.Contains(default).ReturnsForAnyArgs(false);
-        var instruction = new MoveForwardInstruction(_scents);
 
         // Act
-        var actualResult = instruction.Execute(initialPosition);
+        var actualResult = _instruction.Execute(initialPosition);
 
         // Assert
         actualResult.ShouldBe(expectedPosition);
@@ -52,38 +58,16 @@ public class MoveForwardInstructionUnitTests
 
     [Theory]
     [AutoData]
-    public void Execute_OnTheBoundaryEdge_RobotIsBusted(RobotPosition position)
+    public void Execute_HasScent_SamePosition(RobotPosition position)
     {
         // Arrange
-        _scents.Contains(default).ReturnsForAnyArgs(false);
-        var instruction = new MoveForwardInstruction(_scents);
+        _scents.Contains(position).ReturnsForAnyArgs(true);
 
         // Act
-        var actualResult = instruction.Execute(position);
+        var actualResult = _instruction.Execute(position);
 
         // Assert
         actualResult.ShouldBe(position);
         _scents.Received(1).Contains(position);
     }
-
-    // [Theory]
-    // [AutoData]
-    // public void Execute_OnTheBoundaryEdgeWhereOtherRobotGotBusted_Skipped(RobotPosition position)
-    // {
-    //     // Arrange
-    //     var graveyard = Substitute.For<IRobotsGraveyard>();
-    //     graveyard.Contains(default).ReturnsForAnyArgs(true);
-    //
-    //     var boundary = Substitute.For<IBoundary>();
-    //     var instruction = new MoveForwardInstruction(boundary, graveyard);
-    //
-    //     // Act
-    //     var actualResult = instruction.Execute(position);
-    //
-    //     // Assert
-    //     actualResult.Type.ShouldBe(ExecutionResultType.Skipped);
-    //     actualResult.Position.ShouldBeNull();
-    //     boundary.ReceivedCalls().ShouldBeEmpty();
-    //     graveyard.Received(1).Contains(position);
-    // }
 }

@@ -17,7 +17,7 @@ var mission = new ResearchMission(new RobotStdOutPrinter(), missionPlan!.Value);
 var missionValidationResult = mission.Accomplish();
 if (missionValidationResult is not null)
 {
-    Console.WriteLine("Something wrong happend during the mission. {0}", missionValidationResult.ErrorMessage);
+    Console.WriteLine("Something wrong has happened during the mission. {0}", missionValidationResult.ErrorMessage);
     return 1;
 }
 

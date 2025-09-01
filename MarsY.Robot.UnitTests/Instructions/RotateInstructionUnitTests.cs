@@ -14,7 +14,7 @@ public class RotateInstructionUnitTests
     [InlineData(Orientation.South, RotateDirection.Right, Orientation.West)]
     [InlineData(Orientation.West, RotateDirection.Left, Orientation.South)]
     [InlineData(Orientation.West, RotateDirection.Right, Orientation.North)]
-    public void Execute_Executed(Orientation initial, RotateDirection rotate, Orientation expected)
+    public void Execute(Orientation initial, RotateDirection rotate, Orientation expected)
     {
         // Arrange
         var position = new RobotPosition { X = 3, Y = 3, Orientation = initial };
