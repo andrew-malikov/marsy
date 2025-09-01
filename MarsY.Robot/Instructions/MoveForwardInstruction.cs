@@ -1,6 +1,6 @@
 namespace MarsY.Robot.Instructions;
 
-public sealed class MoveForwardInstruction(ISet<RobotPosition> robotScents) : IInstruction
+internal sealed class MoveForwardInstruction(ISet<RobotPosition> robotScents) : IInstruction
 {
     public RobotPosition Execute(RobotPosition position)
     {

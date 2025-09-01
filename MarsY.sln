@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsY.Robot", "MarsY.Robot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsY.Robot.UnitTests", "MarsY.Robot.UnitTests\MarsY.Robot.UnitTests.csproj", "{D9352295-1819-45FE-8BE0-95B76B9879E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarsY.Mission.Cli", "MarsY.Mission.Cli\MarsY.Mission.Cli.csproj", "{43C94AEB-8BB3-473D-B02A-6AF8CD0FB626}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D9352295-1819-45FE-8BE0-95B76B9879E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9352295-1819-45FE-8BE0-95B76B9879E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9352295-1819-45FE-8BE0-95B76B9879E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43C94AEB-8BB3-473D-B02A-6AF8CD0FB626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43C94AEB-8BB3-473D-B02A-6AF8CD0FB626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43C94AEB-8BB3-473D-B02A-6AF8CD0FB626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43C94AEB-8BB3-473D-B02A-6AF8CD0FB626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

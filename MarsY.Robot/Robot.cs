@@ -12,13 +12,13 @@ public enum Orientation
 
 public readonly record struct RobotPosition(int X, int Y, Orientation Orientation);
 
-public enum RobotState
+internal enum RobotState
 {
     Online = 0,
     Busted = 1
 }
 
-public sealed class Robot(
+internal sealed class Robot(
     RobotPosition position,
     IBoundary boundary,
     ISet<RobotPosition> robotScents,

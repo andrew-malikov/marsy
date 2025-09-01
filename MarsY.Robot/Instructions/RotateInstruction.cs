@@ -6,7 +6,7 @@ public enum RotateDirection
     Right = 1
 }
 
-public sealed class RotateInstruction(RotateDirection direction) : IInstruction
+internal sealed class RotateInstruction(RotateDirection direction) : IInstruction
 {
     public RobotPosition Execute(RobotPosition position)
     {
